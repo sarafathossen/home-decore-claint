@@ -3,6 +3,7 @@ import useAuth from '../../../Hooks/useAuth';
 import useAxiosSecure from '../../../Hooks/useAxiosSecure';
 import { useQuery } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
+import { Link } from 'react-router';
 
 const MyBooking = () => {
     const [selectedBooking, setSelectedBooking] = useState(null);
@@ -142,7 +143,7 @@ const MyBooking = () => {
                                         </button>
                                     )}
                                 </td>
-                                <td>{service.trackingId}</td>
+                                <td> <Link className='text-blue-400 underline' to={`/booking-track/${service.trackingId}`}>{service.trackingId}</Link> </td>
                                 <td>{service.workingStatus}</td>
 
                                 <td className="flex gap-2">

@@ -38,7 +38,10 @@ const AssignDeceretors = () => {
             deceretorId: dec._id,
             deceretorName: dec.displayName,
             deceretorEmail: dec.email,
+            trackingId: selectedBooking.trackingId
         };
+        console.log(assignDeceretorInfo)
+
         axiosSecure.patch(`/booking/${selectedBooking._id}`, assignDeceretorInfo)
             .then(res => {
                 if (res.data.bookingUpdated) {
@@ -97,7 +100,10 @@ const AssignDeceretors = () => {
                                         <th>#</th>
                                         <th>Name</th>
                                         <th>Email</th>
+
+                                        <th>Tracking</th>
                                         <th>Action</th>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -108,6 +114,8 @@ const AssignDeceretors = () => {
                                                 <th>{index + 1}</th>
                                                 <td>{dec.displayName}</td>
                                                 <td>{dec.email}</td>
+                                                <td>{dec.trackingId}</td>
+                                                
                                                 <td>
                                                     <button
                                                         onClick={() => handleAssignDeceretor(dec)}

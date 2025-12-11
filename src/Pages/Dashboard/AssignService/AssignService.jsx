@@ -20,7 +20,8 @@ const AssignService = () => {
     const handelBookingStatusUpdate = (booking, workingStatus) => {
         const statusInfo = {
             workingStatus,
-            deceretorId: booking.deceretorId // spelling match backend
+            deceretorId: booking.deceretorId ,
+            trackingId:booking.trackingId
         };
         let message = `Status is updated to ${workingStatus.split('_').join(' ')}`;
 

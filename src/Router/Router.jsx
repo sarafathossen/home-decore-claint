@@ -26,6 +26,7 @@ import AdminRoutes from "./AdminRoutes";
 import AssignDeceretors from "../Pages/Dashboard/AssignDeceretor/AssignDeceretors";
 import AssignService from "../Pages/Dashboard/AssignService/AssignService";
 import CompeleteBooking from "../Pages/Dashboard/CompeleteBooking/CompeleteBooking";
+import BookingTrack from "../Pages/BookingTrack/BookingTrack";
 
 
 
@@ -66,6 +67,10 @@ export const router = createBrowserRouter([
                 path: 'send-percel',
                 element: <PrivateRoutes> <SendPercels></SendPercels> </PrivateRoutes>,
                 loader: () => fetch('/ServiceCenter.json').then(res => res.json()),
+            },
+            {
+                path: 'booking-track/:trackingId',
+                Component:BookingTrack,
             },
         ]
     },
