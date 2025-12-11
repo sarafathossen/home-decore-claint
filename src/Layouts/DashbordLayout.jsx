@@ -4,7 +4,7 @@ import { Link, NavLink, Outlet } from 'react-router';
 import useRole from '../Hooks/useRole';
 
 const DashbordLayout = () => {
-    const {role}=useRole();
+    const { role } = useRole();
     return (
         <div className="drawer lg:drawer-open">
             <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
@@ -19,14 +19,14 @@ const DashbordLayout = () => {
                 </nav>
                 {/* Page content here */}
                 <Outlet></Outlet>
-                
+
             </div>
 
             <div className="drawer-side is-drawer-close:overflow-visible">
                 <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
                 <div className="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
                     {/* Sidebar content here */}
-                    
+
                     <ul className="menu w-full grow">
                         {/* List item */}
                         <li>
@@ -50,20 +50,27 @@ const DashbordLayout = () => {
                         <li>
                             <NavLink to='/dashboard/payment-history' > History</NavLink>
                         </li>
+                        {/* Admin Dashboard Links  */}
+
                         {
-                            role==='admin' && <>
+                            role === 'admin' && <>
                                 <li>
-                                    <NavLink to='/dashboard/user-management' > User Management</NavLink>    
+                                    <NavLink to='/dashboard/user-management' > User Management</NavLink>
                                 </li>
                                 <li>
-                                    <NavLink to='/dashboard/assign-decorator' > Assign Decorators</NavLink>    
+                                    <NavLink to='/dashboard/assign-decorator' > Assign Decorators</NavLink>
                                 </li>
                                 <li>
-                                    <NavLink to='/dashboard/decorator-management' > Decorator Management</NavLink>    
+                                    <NavLink to='/dashboard/decorator-management' > Decorator Management</NavLink>
                                 </li>
 
                             </>
                         }
+                        <li>
+                            <NavLink to='/dashboard/assign-service' >Assign Service</NavLink>
+                        </li>
+
+
 
                         {/* List item */}
                         <li>

@@ -24,6 +24,7 @@ import PaymentHistory from "../Pages/Dashboard/PaymentHistory/PAymentHistory";
 import UserManagement from "../Pages/Dashboard/UserManagement/UserManagement";
 import AdminRoutes from "./AdminRoutes";
 import AssignDeceretors from "../Pages/Dashboard/AssignDeceretor/AssignDeceretors";
+import AssignService from "../Pages/Dashboard/AssignService/AssignService";
 
 
 
@@ -126,6 +127,10 @@ export const router = createBrowserRouter([
             {
                 path: 'assign-decorator',
                 element: <AdminRoutes> <AssignDeceretors></AssignDeceretors> </AdminRoutes>
+            },
+            {
+                path: 'assign-service',
+                element: <AssignService></AssignService>
             },
         ]
     },

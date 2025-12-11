@@ -1,9 +1,8 @@
 import React from 'react';
 import useAuth from '../Hooks/useAuth';
 import useRole from '../Hooks/useRole';
-import Forbidden from '../Components/Logo/Forbidden/Forbidden';
 
-const AdminRoutes = ({ children }) => {
+const DecoratorRoutes = ({ children }) => {
     const { user, loading } = useAuth();
     const { role, isLoading: roleLoading } = useRole();
 
@@ -12,7 +11,7 @@ const AdminRoutes = ({ children }) => {
     }
 
     // If user is NOT admin → Block access
-    if (role !== 'admin') {
+    if (role !== 'decorator') {
         return <Forbidden />;
     }
 
@@ -20,4 +19,4 @@ const AdminRoutes = ({ children }) => {
     return children;
 };
 
-export default AdminRoutes;
+export default DecoratorRoutes;
