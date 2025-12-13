@@ -31,6 +31,7 @@ import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
 
 import CreateService from "../Pages/Dashboard/CreateService/CreateService";
 import AllService from "../Pages/Dashboard/AllService/AllService";
+import UpdateService from "../Pages/Dashboard/UpdateService/UpdateService";
 
 
 
@@ -107,8 +108,8 @@ export const router = createBrowserRouter([
                 Component: Profile
             },
             {
-                path: 'update-service',
-                Component: Profile
+                path: 'update-service/:id',
+                Component: UpdateService
             },
             {
                 path: 'all-service',
