@@ -23,6 +23,11 @@ const MyBooking = () => {
         },
     });
 
+    // ⭐ Sort (latest first)
+    const sortedBookings = [...bookings].sort(
+        (a, b) => new Date(b.bookedDate) - new Date(a.bookedDate)
+    );
+
     // === Delete Function ===
     const handelDelete = (id) => {
         Swal.fire({
@@ -51,18 +56,14 @@ const MyBooking = () => {
 
     // === Payment ===
     const handelPayment = async (service) => {
-
-        // Safely extract and normalize final cost
         const rawCost = service?.finalCost;
 
-        // Convert cost safely from string/number → number
         const cost = Number(
             typeof rawCost === "string"
                 ? rawCost.replace(/[^\d]/g, "")
                 : rawCost
-        ) || 0; // fallback in case of NaN
+        ) || 0;
 
-        // Ensure cost is valid
         if (cost <= 0) {
             alert("Invalid price. Cannot proceed to payment.");
             return;
@@ -73,7 +74,8 @@ const MyBooking = () => {
             parcelId: service?._id,
             userEmail: service?.userEmail,
             parcelName: service?.serviceName,
-            trackingId:service?.trackingId,
+            trackingId: service?.trackingId,
+            createdAt: new Date()
         };
 
         try {
@@ -90,27 +92,12 @@ const MyBooking = () => {
         }
     };
 
-
-    //  const handelPayment = async (parcel) => {
-    //     const paymentInfo = {
-    //         cost: parcel.cost,
-    //         parcelId: parcel._id,
-    //         senderEmail: parcel.senderEmail,
-    //         parcelName: parcel.parcelName,
-    //     }
-    //     const res = await axiosSecure.post('/payment-checkout-session', paymentInfo)
-    //     console.log(res.data.url)
-    //     window.location.assign(res.data.url)
-
-    // }
-
     return (
         <div>
             <h2 className="text-2xl font-semibold mb-4">
                 My Booked Services: {bookings.length}
             </h2>
 
-            {/* === Table === */}
             <div className="overflow-x-auto">
                 <table className="table table-zebra">
                     <thead>
@@ -126,7 +113,7 @@ const MyBooking = () => {
                     </thead>
 
                     <tbody>
-                        {bookings.map((service, index) => (
+                        {sortedBookings.map((service, index) => (
                             <tr key={service._id}>
                                 <th>{index + 1}</th>
                                 <td>{service.serviceName}</td>
@@ -144,11 +131,16 @@ const MyBooking = () => {
                                         </button>
                                     )}
                                 </td>
-                                <td> <Link className='text-blue-400 underline' to={`/booking-track/${service.trackingId}`}>{service.trackingId}</Link> </td>
+
+                                <td>
+                                    <Link className='text-blue-400 underline' to={`/booking-track/${service.trackingId}`}>
+                                        {service.trackingId}
+                                    </Link>
+                                </td>
+
                                 <td>{service.workingStatus}</td>
 
                                 <td className="flex gap-2">
-                                    {/* Update Button */}
                                     <button
                                         onClick={() => {
                                             setSelectedBooking(service);
@@ -161,7 +153,6 @@ const MyBooking = () => {
                                         Update
                                     </button>
 
-                                    {/* Delete Button */}
                                     <button
                                         onClick={() => handelDelete(service._id)}
                                         className="btn btn-xs btn-error text-white"
@@ -191,7 +182,6 @@ const MyBooking = () => {
                             <p><strong>User Email:</strong> {selectedBooking.userEmail}</p>
                             <p><strong>Payment:</strong> {selectedBooking.paymentStatus}</p>
 
-                            {/* Square Feet */}
                             <label>
                                 <strong>Square Feet:</strong>
                                 <input
@@ -204,7 +194,6 @@ const MyBooking = () => {
                                 />
                             </label>
 
-                            {/* Booking Date */}
                             <label>
                                 <strong>New Booked Date:</strong>
                                 <input
@@ -218,7 +207,6 @@ const MyBooking = () => {
                         </div>
                     )}
 
-                    {/* ===== Modal Action ===== */}
                     <div className="modal-action">
                         <button
                             className="btn btn-success"
@@ -229,22 +217,14 @@ const MyBooking = () => {
                                         return;
                                     }
 
-                                    // Validate squareFeet
                                     const sfNum = Number(squareFeet);
                                     if (isNaN(sfNum) || sfNum < 0) {
                                         Swal.fire({ title: "Invalid", text: "Square feet must be a positive number.", icon: "warning" });
                                         return;
                                     }
 
-                                    // Date from input is YYYY-MM-DD already (browser date input)
                                     const formattedDate = newDate || selectedBooking.bookedDate;
-                                    // quick local check
-                                    if (!formattedDate) {
-                                        Swal.fire({ title: "Invalid", text: "Please select a date.", icon: "warning" });
-                                        return;
-                                    }
 
-                                    // Get numeric price from selectedBooking (fallback)
                                     const purePrice = parseInt(
                                         (selectedBooking.price && String(selectedBooking.price).replace(/[^0-9]/g, "")) ||
                                         selectedBooking.finalCost ||
@@ -264,24 +244,16 @@ const MyBooking = () => {
                                         finalCost: updatedFinalCost,
                                     };
 
-                                    console.log('PATCH payload:', payload);
-
                                     const res = await axiosSecure.patch(`/booking/${selectedBooking._id}`, payload);
-
-                                    console.log('PATCH response:', res);
 
                                     if (res.data && res.data.modifiedCount > 0) {
                                         Swal.fire({ title: "Updated!", text: "Booking updated successfully.", icon: "success" });
                                         refetch();
                                         document.getElementById("my_modal_5").close();
                                     } else {
-                                        // show server message if any
-                                        const msg = res.data?.error || "No changes made.";
-                                        Swal.fire({ title: "Notice", text: msg, icon: "info" });
+                                        Swal.fire({ title: "Notice", text: res.data?.error || "No changes made.", icon: "info" });
                                     }
                                 } catch (err) {
-                                    console.error('Update error (frontend):', err);
-                                    // If server responded with JSON error, try show it
                                     const serverMessage = err?.response?.data?.error || err.message;
                                     Swal.fire({ title: "Error", text: serverMessage, icon: "error" });
                                 }
@@ -289,7 +261,6 @@ const MyBooking = () => {
                         >
                             Update
                         </button>
-
 
                         <form method="dialog">
                             <button className="btn">Close</button>

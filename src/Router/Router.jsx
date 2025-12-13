@@ -27,6 +27,9 @@ import AssignDeceretors from "../Pages/Dashboard/AssignDeceretor/AssignDeceretor
 import AssignService from "../Pages/Dashboard/AssignService/AssignService";
 import CompeleteBooking from "../Pages/Dashboard/CompeleteBooking/CompeleteBooking";
 import BookingTrack from "../Pages/BookingTrack/BookingTrack";
+import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
+
+import CreateService from "../Pages/Dashboard/CreateService/CreateService";
 
 
 
@@ -95,8 +98,18 @@ export const router = createBrowserRouter([
         element: <PrivateRoutes> <DashbordLayout></DashbordLayout> </PrivateRoutes>,
         children: [
             {
+                index:true,
+                Component: DashboardHome
+            },
+            {
                 path: 'my-profile',
                 Component: Profile
+            },
+            {
+                path: 'create-service',
+                Component: CreateService
+
+                
             },
             {
                 path: 'my-booking',
