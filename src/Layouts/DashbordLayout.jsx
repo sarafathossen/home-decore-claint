@@ -80,6 +80,9 @@ const DashbordLayout = () => {
                             <NavLink to='/dashboard/completed-booking' >Complite Booking</NavLink>
                         </li>
                         <li>
+                            <NavLink to='/dashboard/all-service' >All Service</NavLink>
+                        </li>
+                        <li>
                             <Link to='/dashboard/create-service'> <button className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Create Booking">
                                 {/* Settings icon */}
                                 <IoIosCreate />

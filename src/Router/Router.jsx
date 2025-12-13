@@ -30,6 +30,7 @@ import BookingTrack from "../Pages/BookingTrack/BookingTrack";
 import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
 
 import CreateService from "../Pages/Dashboard/CreateService/CreateService";
+import AllService from "../Pages/Dashboard/AllService/AllService";
 
 
 
@@ -104,6 +105,14 @@ export const router = createBrowserRouter([
             {
                 path: 'my-profile',
                 Component: Profile
+            },
+            {
+                path: 'update-service',
+                Component: Profile
+            },
+            {
+                path: 'all-service',
+                Component: AllService
             },
             {
                 path: 'create-service',
