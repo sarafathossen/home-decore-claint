@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router';
 import SocialLogin from '../SocialLogin/SocialLogin';
 import axios from 'axios';
 import useAxiosSecure from '../../../Hooks/useAxiosSecure';
+import { toast } from 'react-toastify';
 
 const Register = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -15,11 +16,7 @@ const Register = () => {
 
     const handleRegistration = async (data) => {
         try {
-            // Step 1: Register User
-            const result = await registerUser(data.email, data.password);
-            console.log("User created:", result.user);
-
-            // Step 2: Upload Image to imgbb
+            await registerUser(data.email, data.password);
             const profileImg = data.photo[0];
             const formData = new FormData();
             formData.append("image", profileImg);
@@ -28,97 +25,84 @@ const Register = () => {
             const imageRes = await axios.post(imageApiUrl, formData);
             const photoURL = imageRes.data.data.url;
 
-            console.log("Uploaded Image URL:", photoURL);
-
-            // Step 3: Save user info to DB
-            const userInfo = {
+            await axiosSecure.post("/users", {
                 displayName: data.name,
                 email: data.email,
-                photoURL: photoURL,
-            };
+                photoURL
+            });
 
-            const saveUser = await axiosSecure.post("/users", userInfo);
-
-            if (saveUser.data.insertedId) {
-                console.log("User info saved to database");
-            }
-
-            // Step 4: Update Firebase User Profile
-            const profileUpdate = {
+            await updateUserProfile({
                 displayName: data.name,
-                photoURL: photoURL,
-            };
+                photoURL
+            });
 
-            await updateUserProfile(profileUpdate);
-            console.log("User profile updated");
-
-            // Step 5: Success Alert + Redirect
-            alert("Registration Successful! Welcome to DecorSheba 🎉");
-            navigate(location.state || "/");
-
+            toast("Registration Successful 🎉");
+            navigate("/");
         } catch (error) {
-            console.log("Registration Error:", error);
-            alert("Registration Failed! Please try again.");
+            toast(error.message || "Registration Failed!");
         }
     };
 
     return (
-        <div className='card bg-base-100 w-full mx-auto max-w-sm shrink-0 shadow-2xl'>
-            <h3 className='text-3xl font-bold text-center'>Welcome to DecorSheba</h3>
-            <p className='text-center'>Please Register</p>
+        <div className="flex justify-center items-center min-h-screen px-4 sm:px-6 md:px-12 bg-gray-50">
+            <div className='card bg-base-100 w-full max-w-sm sm:max-w-md md:max-w-lg shadow-2xl p-6 sm:p-8 md:p-10'>
 
-            <form className="card-body" onSubmit={handleSubmit(handleRegistration)}>
-                <fieldset className="fieldset">
+                {/* Heading */}
+                <h3 className='text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-1'>Welcome to DecorSheba</h3>
+                <p className='text-xs sm:text-sm md:text-base text-center mb-4'>Please Register</p>
 
-                    {/* Name */}
-                    <label className="label">Name</label>
-                    <input type="text" {...register('name', { required: true })} className="input" placeholder="Name" />
-                    {errors.name && <p className='text-red-500'>Name is required</p>}
+                <form className="space-y-4" onSubmit={handleSubmit(handleRegistration)}>
+                    <fieldset className="flex flex-col gap-3">
 
-                    {/* Photo */}
-                    <label className="label">Photo</label>
-                    <input type="file" {...register('photo', { required: true })} className="file-input" />
-                    {errors.photo && <p className='text-red-500'>Photo is required</p>}
+                        {/* Name */}
+                        <label className="label text-sm sm:text-base">Name</label>
+                        <input type="text" {...register('name', { required: true })} className="input w-full text-sm sm:text-base" placeholder="Name" />
+                        {errors.name && <p className='text-red-500 text-xs sm:text-sm'>Name is required</p>}
 
-                    {/* Email */}
-                    <label className="label">Email</label>
-                    <input type="email" {...register('email', { required: true })} className="input" placeholder="Email" />
-                    {errors.email && <p className='text-red-500'>Email is required</p>}
+                        {/* Photo */}
+                        <label className="label text-sm sm:text-base">Photo</label>
+                        <input type="file" {...register('photo', { required: true })} className="file-input w-full text-sm sm:text-base" />
+                        {errors.photo && <p className='text-red-500 text-xs sm:text-sm'>Photo is required</p>}
 
-                    {/* Password */}
-                    <label className="label">Password</label>
-                    <input
-                        type="password"
-                        {...register('password', {
-                            required: true,
-                            minLength: 6,
-                            pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-                        })}
-                        className="input"
-                        placeholder="Password"
-                    />
+                        {/* Email */}
+                        <label className="label text-sm sm:text-base">Email</label>
+                        <input type="email" {...register('email', { required: true })} className="input w-full text-sm sm:text-base" placeholder="Email" />
+                        {errors.email && <p className='text-red-500 text-xs sm:text-sm'>Email is required</p>}
 
-                    {errors.password?.type === 'required' && <p className='text-red-500'>Password is required</p>}
-                    {errors.password?.type === 'minLength' && <p className='text-red-500'>Password must be at least 6 characters</p>}
-                    {errors.password?.type === 'pattern' && (
-                        <p className='text-red-500'>
-                            Password must contain uppercase, lowercase, number & special character
-                        </p>
-                    )}
+                        {/* Password */}
+                        <label className="label text-sm sm:text-base">Password</label>
+                        <input
+                            type="password"
+                            {...register('password', {
+                                required: true,
+                                minLength: 6,
+                                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+                            })}
+                            className="input w-full text-sm sm:text-base"
+                            placeholder="Password"
+                        />
 
-                    <button className="btn btn-neutral mt-4">Register</button>
+                        {errors.password?.type === 'required' && <p className='text-red-500 text-xs sm:text-sm'>Password is required</p>}
+                        {errors.password?.type === 'minLength' && <p className='text-red-500 text-xs sm:text-sm'>Password must be at least 6 characters</p>}
+                        {errors.password?.type === 'pattern' && (
+                            <p className='text-red-500 text-xs sm:text-sm'>
+                                Password must contain uppercase, lowercase, number & special character
+                            </p>
+                        )}
 
-                </fieldset>
+                        <button className="btn btn-neutral w-full text-sm sm:text-base mt-2">Register</button>
+                    </fieldset>
 
-                <p className='text-center mt-2'>
-                    Already have an account?  
-                    <Link className='text-blue-400 underline' state={location.state} to={'/login'}>
-                        Login
-                    </Link>
-                </p>
-            </form>
+                    <p className='text-center text-xs sm:text-sm mt-2'>
+                        Already have an account?{' '}
+                        <Link className='text-blue-400 underline' state={location.state} to={'/login'}>Login</Link>
+                    </p>
+                </form>
 
-            <SocialLogin />
+                <div className="mt-4">
+                    <SocialLogin />
+                </div>
+            </div>
         </div>
     );
 };

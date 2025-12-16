@@ -7,7 +7,7 @@ import { Link } from 'react-router';
 
 const MyParcels = () => {
     const { user } = useAuth()
-    console.log(user.email)
+    // console.log(user.email)
     const axiosSecure = useAxiosSecure()
     const { data: parcels = [], refetch } = useQuery({
 
@@ -18,7 +18,7 @@ const MyParcels = () => {
         }
     })
     const handelDelete = (id) => {
-        console.log(id)
+        // console.log(id)
         Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",
@@ -54,11 +54,11 @@ const MyParcels = () => {
             parcelName: parcel.parcelName,
         }
         const res = await axiosSecure.post('/payment-checkout-session', paymentInfo)
-        console.log(res.data.url)
+        // console.log(res.data.url)
         window.location.assign(res.data.url)
 
     }
-    console.log(parcels)
+    // console.log(parcels)
     return (
         <div>
             <h2>All of my parcels : {parcels.length} </h2>

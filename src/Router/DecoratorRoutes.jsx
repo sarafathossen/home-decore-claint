@@ -1,13 +1,15 @@
 import React from 'react';
 import useAuth from '../Hooks/useAuth';
 import useRole from '../Hooks/useRole';
+import Forbidden from '../Components/Logo/Forbidden/Forbidden';
+import Loading from '../Pages/Loading/Loading';
 
 const DecoratorRoutes = ({ children }) => {
     const { user, loading } = useAuth();
     const { role, isLoading: roleLoading } = useRole();
 
     if (loading || !user || roleLoading) {
-        return <h2>Loading...</h2>;
+        return <Loading></Loading>;
     }
 
     // If user is NOT admin → Block access

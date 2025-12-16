@@ -11,7 +11,7 @@ const SocialLogin = ({ redirectPath = '/' }) => {  // <-- redirectPath prop
     const handelGooglesignIn = () => {
         signInGoogle()
             .then(result => {
-                console.log(result);
+                // console.log(result);
                 // login successful → redirect to the given path
 
 

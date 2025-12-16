@@ -3,11 +3,12 @@ import useRole from '../../../Hooks/useRole';
 import AdminDashboard from './AdminDashboard';
 import DecoratorDashboard from './DecoratorDashboard';
 import UserDashboard from './UserDashboard';
+import Loading from '../../Loading/Loading';
 
 const DashboardHome = () => {
     const { role, roleLoading } = useRole()
     if (roleLoading) {
-        return <h2>Loading</h2>
+        return <Loading></Loading>
     }
     if (role === 'admin') {
         return <AdminDashboard></AdminDashboard>

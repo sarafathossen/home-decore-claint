@@ -5,9 +5,8 @@ import { useQuery } from '@tanstack/react-query';
 const AssignDeceretors = () => {
     const [selectedBooking, setSelectedBooking] = useState(null);
     const axiosSecure = useAxiosSecure();
-    const DeceretorModalRef = useRef();
+    const DeceretorModalRef = useRef(null);
 
-    // Fetch bookings
     const { data: booking = [], refetch: bookingRefetch } = useQuery({
         queryKey: ['booking', 'pending-pickup'],
         queryFn: async () => {
@@ -16,7 +15,6 @@ const AssignDeceretors = () => {
         }
     });
 
-    // Fetch decorators for selected booking
     const { data: decorator = [] } = useQuery({
         queryKey: ['decorator', selectedBooking?.category, 'available'],
         enabled: !!selectedBooking,
@@ -30,33 +28,37 @@ const AssignDeceretors = () => {
 
     const openAssignDeceretorModal = (bookingItem) => {
         setSelectedBooking(bookingItem);
-        DeceretorModalRef.current.showModal();
+        setTimeout(() => {
+            if (DeceretorModalRef.current) {
+                DeceretorModalRef.current.showModal();
+            }
+        }, 0);
     };
 
-    const handleAssignDeceretor = (dec) => {
-        const assignDeceretorInfo = {
-            deceretorId: dec._id,
-            deceretorName: dec.displayName,
-            deceretorEmail: dec.email,
-            trackingId: selectedBooking.trackingId
-        };
-        console.log(assignDeceretorInfo)
-
-        axiosSecure.patch(`/booking/${selectedBooking._id}`, assignDeceretorInfo)
-            .then(res => {
-                if (res.data.bookingUpdated) {
-                    bookingRefetch();
-                    DeceretorModalRef.current.close();
-                    alert('Decorator Assigned Successfully');
-                }
-            });
-    }
+    const handleAssignDeceretor = async (dec) => {
+        if (!selectedBooking) return;
+        try {
+            const assignDeceretorInfo = {
+                deceretorId: dec._id,
+                deceretorName: dec.displayName,
+                deceretorEmail: dec.email,
+                trackingId: selectedBooking.trackingId
+            };
+            const res = await axiosSecure.patch(`/booking/${selectedBooking._id}`, assignDeceretorInfo);
+            if (res.data.modifiedCount) {
+                bookingRefetch();
+                DeceretorModalRef.current?.close();
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     return (
-        <div>
-            <h2 className='text-5xl'>Assign Decorators: {booking.length}</h2>
+        <div className="p-4 sm:p-6 md:p-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl mb-4">Assign Decorators: {booking.length}</h2>
             <div className="overflow-x-auto">
-                <table className="table table-zebra">
+                <table className="table table-zebra w-full text-sm sm:text-base md:text-base">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -80,7 +82,7 @@ const AssignDeceretors = () => {
                                 <td>
                                     <button
                                         onClick={() => openAssignDeceretorModal(book)}
-                                        className='btn'
+                                        className="btn btn-sm sm:btn-md md:btn-md"
                                     >
                                         Find Decorator
                                     </button>
@@ -91,19 +93,19 @@ const AssignDeceretors = () => {
                 </table>
 
                 <dialog ref={DeceretorModalRef} className="modal modal-bottom sm:modal-middle">
-                    <div className="modal-box">
-                        <h3 className="font-bold text-lg">Decorators: {decorator.length}</h3>
-                        <div className="overflow-x-auto">
-                            <table className="table table-zebra">
+                    <div className="modal-box p-4 sm:p-6 md:p-8">
+                        <h3 className="font-bold text-lg sm:text-xl md:text-2xl mb-4">
+                            Decorators: {decorator.length}
+                        </h3>
+                        <div className="overflow-x-auto mb-4">
+                            <table className="table table-zebra w-full text-sm sm:text-base md:text-base">
                                 <thead>
                                     <tr>
                                         <th>#</th>
                                         <th>Name</th>
                                         <th>Email</th>
-
                                         <th>Tracking</th>
                                         <th>Action</th>
-                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -115,11 +117,10 @@ const AssignDeceretors = () => {
                                                 <td>{dec.displayName}</td>
                                                 <td>{dec.email}</td>
                                                 <td>{dec.trackingId}</td>
-                                                
                                                 <td>
                                                     <button
                                                         onClick={() => handleAssignDeceretor(dec)}
-                                                        className='btn'
+                                                        className="btn btn-sm sm:btn-md md:btn-md"
                                                     >
                                                         Assign
                                                     </button>
@@ -130,9 +131,12 @@ const AssignDeceretors = () => {
                             </table>
                         </div>
                         <div className="modal-action">
-                            <form method="dialog">
-                                <button className="btn">Close</button>
-                            </form>
+                            <button
+                                onClick={() => DeceretorModalRef.current?.close()}
+                                className="btn btn-outline btn-sm sm:btn-md md:btn-md"
+                            >
+                                Close
+                            </button>
                         </div>
                     </div>
                 </dialog>

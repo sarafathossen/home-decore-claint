@@ -5,7 +5,7 @@ import ReviewsCard from './ReviewsCard';
 
 const Reviews = ({ reviewsPrommise }) => {
     const reviews = use(reviewsPrommise)
-    console.log(reviews)
+    // console.log(reviews)
     return (
         <div className="my-24">
             <div className="text-center mb-24">

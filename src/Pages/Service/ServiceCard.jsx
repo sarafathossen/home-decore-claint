@@ -1,9 +1,7 @@
-
 import { useNavigate } from 'react-router';
-import { AuthContext } from '../../Contexts/AuthContext/AuthContext';
+import { motion } from 'framer-motion';
 
 const ServiceCard = ({ service }) => {
-    // const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleClick = () => {
@@ -11,21 +9,43 @@ const ServiceCard = ({ service }) => {
         navigate(`/service/service-details/${serviceId}`);
     };
 
-
     return (
-        <div className='border bg-zinc-300 p-4 rounded-lg'>
-            <img className='h-[300px] w-full' src='https://i.pinimg.com/736x/2c/31/01/2c31015d1d3df874992d5f90c4d9c1ab.jpg' alt={service.name} />
-            <h2 className='text-xl font-bold'>{service.name}</h2>
-            <div className="flex justify-between px-2">
-                <p className='font-bold'>{service.price} Per Square </p>
-                <p className='font-bold text-green-600'>{service.category}</p>
+        <div className="border bg-zinc-300 p-3 sm:p-4 rounded-lg flex flex-col h-full">
+
+            {/* Image */}
+            <img
+                className="h-40 sm:h-48 md:h-56 lg:h-[300px] w-full object-cover rounded-md"
+                src={service.image}
+                alt={service.name}
+            />
+
+            {/* Title */}
+            <h2 className="text-base sm:text-lg md:text-xl font-bold mt-3 truncate">
+                {service.name}
+            </h2>
+
+            {/* Price & Category */}
+            <div className="flex justify-between items-center px-1 sm:px-2 mt-2 text-sm sm:text-base">
+                <p className="font-bold">
+                    {service.price} <span className="hidden sm:inline">Per Square</span>
+                </p>
+                <p className="font-bold text-green-600 truncate max-w-[120px]">
+                    {service.category}
+                </p>
             </div>
-            <button
+
+            {/* Button */}
+            <motion.button
                 onClick={handleClick}
-                className='px-6 w-full  my-4 py-3 border border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition duration-300'
+                whileHover={{ scale: 1.05, backgroundColor: "#2563EB", color: "#fff" }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="px-4 sm:px-6 w-full mt-auto my-4 py-2 sm:py-3 
+                           border border-blue-600 text-blue-600 
+                           rounded-lg font-semibold text-sm sm:text-base"
             >
                 Details
-            </button>
+            </motion.button>
         </div>
     );
 };

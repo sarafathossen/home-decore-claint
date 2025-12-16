@@ -1,16 +1,77 @@
-# React + Vite
+# 🏠 Home Decorator Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 📌 Project Name
+Home Decorator Management System
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🎯 Purpose
+The Home Decorator Management System is designed to make home decoration service management simple, efficient, and organized.  
+This platform helps manage bookings, decorators, work status, and customer interactions smoothly, reducing manual work and improving overall service quality.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🌐 Live URL
+👉 https://decor-sheba.netlify.app/
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🚀 Key Features
+- User-friendly booking system
+- Decorator assignment and availability management
+- Real-time decorator working status update
+- Secure authentication and authorization
+- Admin dashboard for managing decorators and bookings
+- Customer schedule and booking tracking
+- Responsive design for mobile, tablet, and desktop
+- Modern UI built with React and Tailwind CSS
+
+---
+
+## 📦 NPM Packages Used
+
+### Frontend
+- react
+- react-dom
+- react-router-dom
+- @tanstack/react-query
+- axios
+- react-hook-form
+- firebase
+- tailwindcss
+- daisyui
+- framer-motion
+- sweetalert2
+
+### Backend
+- express
+- cors
+- mongodb
+- dotenv
+- jsonwebtoken
+- stripe
+- firebase-admin
+
+---
+
+## 🛠️ Technologies Used
+- React.js
+- Node.js
+- Express.js
+- MongoDB
+- Firebase Authentication
+- Stripe Payment Gateway
+- Tailwind CSS
+
+---
+
+## 👨‍💻 Developer
+**Sarafat Hossen**  
+Frontend & Full Stack Web Developer  
+Focused on building modern, scalable, and user-friendly web applications.
+
+---
+
+## 📄 License
+This project is for educational and portfolio purposes.

@@ -32,6 +32,16 @@ import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
 import CreateService from "../Pages/Dashboard/CreateService/CreateService";
 import AllService from "../Pages/Dashboard/AllService/AllService";
 import UpdateService from "../Pages/Dashboard/UpdateService/UpdateService";
+import RevinewMonitaring from "../Pages/Dashboard/RevenewMonitoring/RevinewMonitaring";
+import BookingHistory from "../Pages/BookingHistory/BookingHistory";
+import MyAssignProject from "../Pages/Decorator/MyAssignProject";
+import TodaysSchedule from "../Pages/Decorator/TodaysSchedule ";
+import DeceretorEarning from "../Pages/Decorator/DeceretorEarning";
+import ManageBookings from "../Pages/Dashboard/Booking/ManageBookings";
+import DecoratorRoutes from "./DecoratorRoutes";
+import About from "../Pages/About/About";
+import Contact from "../Pages/Contact/Contact";
+
 
 
 
@@ -45,7 +55,7 @@ export const router = createBrowserRouter([
             {
                 index: true,
                 Component: Home,
-                loader: () => fetch(`http://localhost:3000/services`),
+                loader: () => fetch(`https://home-decor-server-lovat.vercel.app/services`),
                 
             },
             {
@@ -56,12 +66,12 @@ export const router = createBrowserRouter([
             {
                 path: 'services',
                 Component: Service,
-                loader: () => fetch('http://localhost:3000/services').then(res => res.json())
+                loader: () => fetch('https://home-decor-server-lovat.vercel.app/services').then(res => res.json())
             },
             {
                 path: 'service/service-details/:id',
                 element: <ServiceDetails></ServiceDetails>,
-                loader: ({ params }) => fetch(`http://localhost:3000/services/${params.id}`),
+                loader: ({ params }) => fetch(`https://home-decor-server-lovat.vercel.app/services/${params.id}`),
             },
 
             {
@@ -69,9 +79,14 @@ export const router = createBrowserRouter([
                 element: <PrivateRoutes> <BeDecorator></BeDecorator> </PrivateRoutes>
             },
             {
-                path: 'send-percel',
-                element: <PrivateRoutes> <SendPercels></SendPercels> </PrivateRoutes>,
-                loader: () => fetch('/ServiceCenter.json').then(res => res.json()),
+                path: 'about',
+                element: <About></About>
+               
+            },
+            {
+                path: 'contact',
+                element: <Contact></Contact>
+               
             },
             {
                 path: 'booking-track/:trackingId',
@@ -108,16 +123,48 @@ export const router = createBrowserRouter([
                 Component: Profile
             },
             {
+                path: 'manage-booking',
+                // Component: ManageBookings
+                element:<AdminRoutes> <ManageBookings></ManageBookings> </AdminRoutes>
+            },
+            {
+                path: 'todays-schedule',
+                // Component: TodaysSchedule
+                element:<DecoratorRoutes> <TodaysSchedule></TodaysSchedule> </DecoratorRoutes>
+            },
+            {
+                path: 'deceretor-earning',
+                // Component: DeceretorEarning
+                element:<DecoratorRoutes> <DeceretorEarning></DeceretorEarning> </DecoratorRoutes>
+            },
+            {
+                path: 'booking-history',
+                // Component: BookingHistory
+                element:<AdminRoutes> <BookingHistory></BookingHistory> </AdminRoutes>
+            },
+            {
+                path: 'my-assign',
+                // Component: MyAssignProject
+                
+                element:<DecoratorRoutes> <MyAssignProject></MyAssignProject> </DecoratorRoutes>
+            },
+            {
+                path: 'revinew-monitaring',
+                Component: RevinewMonitaring
+            },
+            {
                 path: 'update-service/:id',
                 Component: UpdateService
             },
             {
                 path: 'all-service',
-                Component: AllService
+                // Component: AllService
+                element:<AdminRoutes> <AllService></AllService> </AdminRoutes>
             },
             {
                 path: 'create-service',
-                Component: CreateService
+                // Component: CreateService
+                element:<AdminRoutes> <CreateService></CreateService> </AdminRoutes>
 
                 
             },
@@ -143,7 +190,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'user-management',
-                element:<AdminRoutes> <UserManagement></UserManagement> </AdminRoutes>
+                element: <AdminRoutes><UserManagement></UserManagement></AdminRoutes>
             },
             {
                 path: 'payment-cancelled',
@@ -151,19 +198,19 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'aprove-decorator',
-                element: <AdminRoutes> <AproveDecorator></AproveDecorator> </AdminRoutes>
+                element:  <AdminRoutes><AproveDecorator></AproveDecorator> </AdminRoutes>
             },
             {
                 path: 'assign-decorator',
-                element: <AdminRoutes> <AssignDeceretors></AssignDeceretors> </AdminRoutes>
+                element:  <AdminRoutes><AssignDeceretors></AssignDeceretors> </AdminRoutes>
             },
             {
                 path: 'assign-service',
-                element: <AssignService></AssignService>
+                element: <DecoratorRoutes><AssignService></AssignService></DecoratorRoutes>
             },
             {
                 path: 'completed-booking',
-                element: <CompeleteBooking></CompeleteBooking>
+                element: <AdminRoutes><CompeleteBooking></CompeleteBooking></AdminRoutes>
             },
         ]
     },

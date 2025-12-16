@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import Loading from "../../Loading/Loading";
 
 
 const UpdateService = () => {
@@ -49,7 +50,7 @@ const UpdateService = () => {
     };
 
 
-    if (loading) return <p className="text-center mt-10">Loading service...</p>;
+    if (loading) return <Loading></Loading>;
     if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
 
     return (

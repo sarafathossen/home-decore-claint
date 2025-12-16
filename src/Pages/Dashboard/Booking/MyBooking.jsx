@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
-import useAuth from '../../../Hooks/useAuth';
 import useAxiosSecure from '../../../Hooks/useAxiosSecure';
 import { useQuery } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import useAuth from '../../../Hooks/useAuth';
 
 const MyBooking = () => {
+    const { user } = useAuth();
+    const axiosSecure = useAxiosSecure();
+    const navigate = useNavigate();
+
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [newDate, setNewDate] = useState("");
     const [squareFeet, setSquareFeet] = useState("");
 
-    const { user } = useAuth();
-    const axiosSecure = useAxiosSecure();
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
-    // === Fetch User Bookings ===
     const { data: bookings = [], refetch } = useQuery({
         queryKey: ['my-booking', user?.email],
         enabled: !!user?.email,
@@ -23,124 +26,130 @@ const MyBooking = () => {
         },
     });
 
-    // ⭐ Sort (latest first)
-    const sortedBookings = [...bookings].sort(
-        (a, b) => new Date(b.bookedDate) - new Date(a.bookedDate)
-    );
-
-    // === Delete Function ===
-    const handelDelete = (id) => {
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axiosSecure.delete(`/booking/${id}`).then((res) => {
-                    if (res.data.deletedCount) {
-                        refetch();
-                        Swal.fire({
-                            title: "Deleted!",
-                            text: "Your booking has been deleted.",
-                            icon: "success",
-                        });
-                    }
-                });
-            }
-        });
+    const parseBookedDate = (dateStr) => {
+        if (!dateStr) return new Date(0);
+        const [day, month, year] = dateStr.split("-");
+        return new Date(Number(year), Number(month) - 1, Number(day));
     };
 
-    // === Payment ===
+    const sortedBookings = [...bookings].sort((a, b) => {
+        return parseBookedDate(b.bookedDate) - parseBookedDate(a.bookedDate);
+    });
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentBookings = sortedBookings.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(sortedBookings.length / itemsPerPage);
+
     const handelPayment = async (service) => {
-        const rawCost = service?.finalCost;
-
-        const cost = Number(
-            typeof rawCost === "string"
-                ? rawCost.replace(/[^\d]/g, "")
-                : rawCost
-        ) || 0;
-
-        if (cost <= 0) {
-            alert("Invalid price. Cannot proceed to payment.");
+        if (!user?.email) {
+            Swal.fire("Error", "User email not found", "error");
             return;
         }
 
-        const paymentInfo = {
-            cost,
-            parcelId: service?._id,
-            userEmail: service?.userEmail,
-            parcelName: service?.serviceName,
-            trackingId: service?.trackingId,
-            createdAt: new Date()
-        };
+        try {
+            const res = await axiosSecure.post('/payment-checkout-session', {
+                cost: service.finalCost,
+                parcelId: service._id,
+                customerEmail: user?.email,
+                parcelName: service.serviceName,
+                trackingId: service.trackingId || ""
+            });
+
+            if (res.data?.url) window.location.assign(res.data.url);
+            else Swal.fire("Error", "Payment session failed", "error");
+        } catch {
+            Swal.fire("Error", "Payment failed", "error");
+        }
+    };
+
+    const handleUpdateBooking = async () => {
+        if (!selectedBooking) return;
+        const sf = Number(squareFeet) || 0;
+        const price = Number(selectedBooking.price) || 0;
+        const finalCost = sf * price;
 
         try {
-            const { data } = await axiosSecure.post("/payment-checkout-session", paymentInfo);
+            const res = await axiosSecure.patch(
+                `/booking/${selectedBooking._id}`,
+                { bookedDate: newDate, squareFeet: sf, finalCost }
+            );
 
-            if (!data?.url) {
-                throw new Error("Checkout URL missing");
+            if (res.data.modifiedCount > 0) {
+                refetch();
+                Swal.fire("Updated!", "Booking updated successfully", "success");
+                document.getElementById("my_modal_5").close();
             }
+        } catch {
+            Swal.fire("Error", "Update failed", "error");
+        }
+    };
 
-            window.location.assign(data.url);
-        } catch (err) {
-            console.error("Payment Error:", err.response?.data || err.message);
-            alert("Payment could not be processed. Please try again.");
+    const handleDeleteBooking = async (id) => {
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+        });
+
+        if (result.isConfirmed) {
+            const res = await axiosSecure.delete(`/booking/${id}`);
+            if (res.data.deletedCount > 0) {
+                refetch();
+                Swal.fire("Deleted!", "Booking removed", "success");
+            }
         }
     };
 
     return (
-        <div>
-            <h2 className="text-2xl font-semibold mb-4">
+        <div className="px-2 sm:px-4 md:px-8 lg:px-12 py-6">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4">
                 My Booked Services: {bookings.length}
             </h2>
 
             <div className="overflow-x-auto">
-                <table className="table table-zebra">
+                <table className="table table-zebra w-full text-sm sm:text-base md:text-lg">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Service Name</th>
+                            <th>Service</th>
                             <th>Price</th>
                             <th>Payment</th>
-                            <th>Tracking ID</th>
-                            <th>Work Status</th>
-                            <th>Actions</th>
+                            <th>Tracking</th>
+                            <th>Work</th>
+                            <th>Booked Date</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        {sortedBookings.map((service, index) => (
+                        {currentBookings.map((service, index) => (
                             <tr key={service._id}>
-                                <th>{index + 1}</th>
+                                <th>{indexOfFirstItem + index + 1}</th>
                                 <td>{service.serviceName}</td>
                                 <td>{service.finalCost}</td>
-
                                 <td>
-                                    {service.paymentStatus === "paid" ? (
-                                        <span className="text-green-500 font-medium">Paid</span>
+                                    {service.paymentStatus === 'paid' ? (
+                                        <span className='text-green-500'>Paid</span>
                                     ) : (
                                         <button
                                             onClick={() => handelPayment(service)}
-                                            className="btn btn-sm btn-primary text-black"
+                                            className='btn btn-xs sm:btn-sm btn-primary text-black'
                                         >
                                             Pay
                                         </button>
                                     )}
                                 </td>
-
                                 <td>
-                                    <Link className='text-blue-400 underline' to={`/booking-track/${service.trackingId}`}>
+                                    <Link className="text-blue-500 underline text-xs sm:text-sm md:text-base"
+                                        to={`/booking-track/${service.trackingId}`}>
                                         {service.trackingId}
                                     </Link>
                                 </td>
-
-                                <td>{service.workingStatus}</td>
-
-                                <td className="flex gap-2">
+                                <td>{service.workingStatus || "pending"}</td>
+                                <td>{service.bookedDate}</td>
+                                <td className="space-x-1 flex flex-wrap gap-1">
                                     <button
                                         onClick={() => {
                                             setSelectedBooking(service);
@@ -148,16 +157,15 @@ const MyBooking = () => {
                                             setSquareFeet(service.squareFeet || "");
                                             document.getElementById("my_modal_5").showModal();
                                         }}
-                                        className="btn btn-xs btn-outline"
+                                        className="btn btn-xs sm:btn-sm btn-outline"
                                     >
                                         Update
                                     </button>
-
                                     <button
-                                        onClick={() => handelDelete(service._id)}
-                                        className="btn btn-xs btn-error text-white"
+                                        onClick={() => handleDeleteBooking(service._id)}
+                                        className="btn btn-xs sm:btn-sm btn-error text-white"
                                     >
-                                        Cancel
+                                        Delete
                                     </button>
                                 </td>
                             </tr>
@@ -166,107 +174,66 @@ const MyBooking = () => {
                 </table>
             </div>
 
-            {/* === Modal === */}
-            <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
-                <div className="modal-box">
-                    <h3 className="font-bold text-lg mb-2">
-                        Booking Details (Only Booked Date & SquareFeet Editable)
-                    </h3>
+            {/* Pagination */}
+            <div className="flex flex-wrap justify-center mt-4 gap-2">
+                <button
+                    className="btn btn-sm"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(p => p - 1)}
+                >
+                    Prev
+                </button>
 
-                    {selectedBooking && (
-                        <div className="space-y-3 text-sm">
-                            <p><strong>Service:</strong> {selectedBooking.serviceName}</p>
-                            <p><strong>Price:</strong> {selectedBooking.price} Per Square </p>
-                            <p><strong>Category:</strong> {selectedBooking.category}</p>
-                            <p><strong>Duration:</strong> {selectedBooking.duration}</p>
-                            <p><strong>User Email:</strong> {selectedBooking.userEmail}</p>
-                            <p><strong>Payment:</strong> {selectedBooking.paymentStatus}</p>
+                {[...Array(totalPages)].map((_, i) => (
+                    <button
+                        key={i}
+                        className={`btn btn-sm ${currentPage === i + 1 ? "btn-primary text-black" : ""}`}
+                        onClick={() => setCurrentPage(i + 1)}
+                    >
+                        {i + 1}
+                    </button>
+                ))}
 
-                            <label>
-                                <strong>Square Feet:</strong>
-                                <input
-                                    type="number"
-                                    placeholder="Enter size in sq.ft"
-                                    value={squareFeet}
-                                    onChange={(e) => setSquareFeet(e.target.value)}
-                                    className="input input-bordered w-full mt-1"
-                                    min="0"
-                                />
-                            </label>
+                <button
+                    className="btn btn-sm"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(p => p + 1)}
+                >
+                    Next
+                </button>
+            </div>
 
-                            <label>
-                                <strong>New Booked Date:</strong>
-                                <input
-                                    type="date"
-                                    className="input input-bordered w-full mt-1"
-                                    value={newDate}
-                                    onChange={(e) => setNewDate(e.target.value)}
-                                    min={new Date().toISOString().split("T")[0]}
-                                />
-                            </label>
-                        </div>
-                    )}
+            {/* Update Modal */}
+            <dialog id="my_modal_5" className="modal">
+                <div className="modal-box w-11/12 sm:w-3/4 md:w-2/3 lg:w-1/2">
+                    <h3 className="font-bold text-lg mb-4">Update Booking</h3>
+                    <p>Update Date</p>
+                    <input
+                        value={newDate}
+                        onChange={(e) => setNewDate(e.target.value)}
+                        placeholder="DD-MM-YYYY"
+                        className="input input-bordered w-full mb-3"
+                    />
+                    <p>Update Square Feet</p>
+                    <input
+                        type="number"
+                        value={squareFeet}
+                        onChange={(e) => setSquareFeet(e.target.value)}
+                        placeholder="Square Feet"
+                        className="input input-bordered w-full mb-4"
+                    />
 
-                    <div className="modal-action">
-                        <button
-                            className="btn btn-success"
-                            onClick={async () => {
-                                try {
-                                    if (!selectedBooking) {
-                                        Swal.fire({ title: "Error", text: "No booking selected.", icon: "error" });
-                                        return;
-                                    }
-
-                                    const sfNum = Number(squareFeet);
-                                    if (isNaN(sfNum) || sfNum < 0) {
-                                        Swal.fire({ title: "Invalid", text: "Square feet must be a positive number.", icon: "warning" });
-                                        return;
-                                    }
-
-                                    const formattedDate = newDate || selectedBooking.bookedDate;
-
-                                    const purePrice = parseInt(
-                                        (selectedBooking.price && String(selectedBooking.price).replace(/[^0-9]/g, "")) ||
-                                        selectedBooking.finalCost ||
-                                        0
-                                    );
-
-                                    if (!purePrice) {
-                                        Swal.fire({ title: "Error", text: "Cannot determine service price.", icon: "error" });
-                                        return;
-                                    }
-
-                                    const updatedFinalCost = sfNum * Number(purePrice);
-
-                                    const payload = {
-                                        bookedDate: formattedDate,
-                                        squareFeet: sfNum,
-                                        finalCost: updatedFinalCost,
-                                    };
-
-                                    const res = await axiosSecure.patch(`/booking/${selectedBooking._id}`, payload);
-
-                                    if (res.data && res.data.modifiedCount > 0) {
-                                        Swal.fire({ title: "Updated!", text: "Booking updated successfully.", icon: "success" });
-                                        refetch();
-                                        document.getElementById("my_modal_5").close();
-                                    } else {
-                                        Swal.fire({ title: "Notice", text: res.data?.error || "No changes made.", icon: "info" });
-                                    }
-                                } catch (err) {
-                                    const serverMessage = err?.response?.data?.error || err.message;
-                                    Swal.fire({ title: "Error", text: serverMessage, icon: "error" });
-                                }
-                            }}
-                        >
-                            Update
+                    <div className="flex flex-wrap justify-end gap-2">
+                        <button onClick={handleUpdateBooking} className="btn btn-primary">
+                            Save
                         </button>
-
-                        <form method="dialog">
-                            <button className="btn">Close</button>
-                        </form>
+                        <button
+                            onClick={() => document.getElementById("my_modal_5").close()}
+                            className="btn"
+                        >
+                            Cancel
+                        </button>
                     </div>
-
                 </div>
             </dialog>
         </div>

@@ -11,7 +11,7 @@ const SendPercels = () => {
         //  formState: { errors } 
     } = useForm()
     const { user } = useAuth()
-    console.log(user)
+    // console.log(user)
     const axciosSecure = useAxiosSecure()
     const serviceCenter = useLoaderData()
     const navigate = useNavigate()
@@ -25,7 +25,7 @@ const SendPercels = () => {
         const districts = regionDistricts.map(d => d.district)
         return districts
     }
-    console.log(regions)
+    // console.log(regions)
     const handelSendPercel = data => {
         const isDocument = data.parcelType === 'document'
         const isSameDistrict = data.senderDistrict === data.receiverDistrict
@@ -45,7 +45,7 @@ const SendPercels = () => {
                 cost = minimumCharg + extraCharge
             }
         }
-        console.log('Cost  : ', cost)
+        // console.log('Cost  : ', cost)
         data.cost = cost
 
         Swal.fire({
@@ -60,7 +60,7 @@ const SendPercels = () => {
             if (result.isConfirmed) {
                 axciosSecure.post('/parcels', data)
                     .then(res => {
-                        console.log('after seving parcels', res.data)
+                        // console.log('after seving parcels', res.data)
                         if (res.data.insertedId) {
                             navigate('/dashboard/my-parcels')
                             Swal.fire({
