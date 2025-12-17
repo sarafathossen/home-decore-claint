@@ -63,7 +63,7 @@ const BookingHistory = () => {
     return (
         <div className="p-4 sm:p-6 md:p-8">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-5">
-                {/* All Booking History ({filteredBookings.length}) */}
+                All Booking History ({filteredBookings.length})
             </h2>
 
             {/* Filters */}

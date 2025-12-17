@@ -22,9 +22,9 @@ const Error = () => {
                     Oops! The page you’re looking for doesn’t exist.
                 </p>
 
-                <p className="mt-1 sm:mt-2 text-gray-500 text-xs sm:text-sm md:text-base">
+                {/* <p className="mt-1 sm:mt-2 text-gray-500 text-xs sm:text-sm md:text-base">
                     It might have been removed, renamed, or temporarily unavailable.
-                </p>
+                </p> */}
 
                 {/* Actions */}
                 <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
