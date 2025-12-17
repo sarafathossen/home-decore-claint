@@ -62,7 +62,7 @@ const TodaysSchedule = () => {
                         ) : (
                             <tr>
                                 <td colSpan="7" className="text-center text-sm sm:text-base md:text-lg">
-                                    {/* No bookings found for today. */}
+                                    No bookings found for today.
                                 </td>
                             </tr>
                         )}
