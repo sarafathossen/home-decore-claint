@@ -16,9 +16,9 @@ const Covarage = () => {
 
     return (
         <div className="px-4 sm:px-6 md:px-12 py-8">
-            <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-center">
+            {/* <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-center">
                 Our Service Coverage
-            </h3>
+            </h3> */}
 
             <div className="border w-full rounded-2xl overflow-hidden h-[300px] sm:h-[400px] md:h-[600px]">
                 <MapContainer

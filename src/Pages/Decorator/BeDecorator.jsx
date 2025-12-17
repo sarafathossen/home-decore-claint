@@ -92,7 +92,7 @@ const BeDecorator = () => {
 
     return (
         <div className="p-6">
-            {/* <h2 className="text-4xl text-primary font-bold">Be a Decorator</h2> */}
+            <h2 className="text-4xl text-primary font-bold">Be a Decorator</h2>
 
             <form onSubmit={handleSubmit(handleDecoratorApplication)} className="mt-8 text-black">
                 <fieldset className="fieldset">
