@@ -28,7 +28,7 @@ const MyAssignProject = () => {
     return (
         <div className="p-4 sm:p-6 md:p-10">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-                {/* My Assigned Bookings ({bookings.length}) */}
+                My Assigned Bookings ({bookings.length})
             </h2>
 
             {bookings.length === 0 ? (
