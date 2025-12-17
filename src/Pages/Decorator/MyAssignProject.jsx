@@ -44,8 +44,8 @@ const MyAssignProject = () => {
                                 <th>Date</th>
                                 <th>Price</th>
                                 <th>Payment</th>
+                                {/* <th>Status</th> */}
                                 <th>Status</th>
-                                <th>Work</th>
                             </tr>
                         </thead>
 
@@ -65,7 +65,7 @@ const MyAssignProject = () => {
                                             {item.paymentStatus}
                                         </span>
                                     </td>
-                                    <td>{item.status}</td>
+                                    {/* <td>{item.status}</td> */}
                                     <td>
                                         <span
                                             className={`badge ${item.workingStatus === "finished_work" ? "badge-info" : "badge-outline"
